@@ -1,21 +1,21 @@
 final: prev: with final; {
 
   # For jupyter
-  mkIhaskellKernel = { name ? "Haedosa-Haskell"
+  mkIhaskellKernel = { name ? "Haedosa"
                      , packages ? p : []
                      } : callPackage ./kernels/ihaskell {
                            inherit name packages;
                          };
 
-  mkIpythonKernel = { name ? "Haedosa-Python"
+  mkIpythonKernel = { name ? "Haedosa"
                     , packages ? p : []
                     }: callPackage ./kernels/ipython {
                          inherit name packages;
                        };
 
-  mkJupyterlab = { haskellKernelName ? "Haedosa-Haskell"
+  mkJupyterlab = { haskellKernelName ? "Haedosa"
                  , haskellPackages ? p: []
-                 , pythonKernelName ? "Haedosa-Python"
+                 , pythonKernelName ? "Haedosa"
                  , pythonPackages ? p: [] }: let
                    ihaskellKernel = mkIhaskellKernel { name = haskellKernelName;
                                                        packages = haskellPackages; };
@@ -28,13 +28,13 @@ final: prev: with final; {
     });
 
   jupyterlab = mkJupyterlab {
-      haskellKernelName = "Haedosa-Haskell";
+      haskellKernelName = "Haedosa";
       haskellPackages = p: with p;
         [ hvega
           ihaskell-hvega
           # add haskell pacakges if necessary
         ];
-      pythonKernelName = "Haedosa-Python";
+      pythonKernelName = "Haedosa";
       pythonPackages = p: with p;
         [ # add python pacakges if necessary
           scipy
