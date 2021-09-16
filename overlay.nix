@@ -39,6 +39,11 @@ final: prev: with final; {
         [ # add python pacakges if necessary
           scipy
           numpy
+          tensorflow-bin
+          matplotlib
+          scikit-learn
+          pandas
+          lightgbm
         ];
     };
 }
