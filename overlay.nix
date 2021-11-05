@@ -8,19 +8,28 @@ final: prev: with final; {
                          };
 
   mkIpythonKernel = { name ? "Haedosa"
+                    , python3 ? python38
                     , packages ? p : []
                     }: callPackage ./kernels/ipython {
-                         inherit name packages;
+                         inherit name packages python3;
                        };
 
   mkJupyterlab = { haskellKernelName ? "Haedosa"
                  , haskellPackages ? p: []
+                 , python3 ? final.python38
                  , pythonKernelName ? "Haedosa"
                  , pythonPackages ? p: [] }: let
-                   ihaskellKernel = mkIhaskellKernel { name = haskellKernelName;
-                                                       packages = haskellPackages; };
-                   ipythonKernel = mkIpythonKernel { name = pythonKernelName;
-                                                     packages = pythonPackages; };
+                   ihaskellKernel = mkIhaskellKernel
+                     {
+                       name = haskellKernelName;
+                       packages = haskellPackages;
+                     };
+                   ipythonKernel = mkIpythonKernel
+                     {
+                       inherit python3;
+                       name = pythonKernelName;
+                       packages = pythonPackages;
+                     };
     in python3Packages.jupyterlab.overridePythonAttrs (oldAttrs: {
       makeWrapperArgs = oldAttrs.makeWrapperArgs ++ [
         "--set JUPYTER_PATH ${ihaskellKernel}:${ipythonKernel}"
