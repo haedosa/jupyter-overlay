@@ -3,23 +3,27 @@
 
   inputs = {
 
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils/master";
-    flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
+    haedosa.url = "github:haedosa/flakes";
+    nixpkgs.follows = "haedosa/nixpkgs";
+    flake-utils.follows = "haedosa/flake-utils";
+
   };
 
   outputs =
-    inputs@{ self, nixpkgs, flake-compat, flake-utils, ... }:
+    { self
+    , nixpkgs
+    , flake-utils
+    , ...
+    }@inputs:
     {
-      overlays = [ (import ./overlay.nix) ];
-      overlay = nixpkgs.lib.composeManyExtensions self.overlays;
+      overlay = nixpkgs.lib.composeManyExtensions [ (import ./overlay.nix) ];
     }  // flake-utils.lib.eachDefaultSystem (system:
 
       let
         pkgs = import nixpkgs {
           inherit system;
           config = {};
-          overlays = self.overlays;
+          overlays = [ self.overlay ];
         };
 
       in
