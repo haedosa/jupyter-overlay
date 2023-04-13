@@ -8,7 +8,7 @@ final: prev: with final; {
                          };
 
   mkIpythonKernel = { name ? "Haedosa"
-                    , python3 ? python38
+                    , python3 ? python310
                     , packages ? p : []
                     }: callPackage ./kernels/ipython {
                          inherit name packages python3;
@@ -16,7 +16,7 @@ final: prev: with final; {
 
   mkJupyterlab = { haskellKernelName ? "Haedosa"
                  , haskellPackages ? p: []
-                 , python3 ? final.python38
+                 , python3 ? final.python310
                  , pythonKernelName ? "Haedosa"
                  , pythonPackages ? p: [] }: let
                    ihaskellKernel = mkIhaskellKernel

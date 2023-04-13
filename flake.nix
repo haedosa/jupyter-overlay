@@ -3,9 +3,8 @@
 
   inputs = {
 
-    haedosa.url = "github:haedosa/flakes";
-    nixpkgs.follows = "haedosa/nixpkgs";
-    flake-utils.follows = "haedosa/flake-utils";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
 
   };
 
