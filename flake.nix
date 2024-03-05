@@ -3,7 +3,8 @@
 
   inputs = {
 
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    haedosa.url = "github:haedosa/flakes";
+    nixpkgs.follows = "haedosa/nixpkgs-23-11";
     flake-utils.url = "github:numtide/flake-utils";
 
   };
@@ -21,19 +22,27 @@
       let
         pkgs = import nixpkgs {
           inherit system;
-          config = {};
+          config = {
+            allowUnfree = true;
+          };
           overlays = [ self.overlay ];
         };
 
       in
       {
 
-        defaultPackage = pkgs.jupyterlab;
-        defaultApp = {
+        packages.default = pkgs.jupyterlab;
+        apps.default = {
           type = "app";
           program = "${pkgs.jupyterlab}/bin/jupyter-lab";
         };
 
+        devShells.default = pkgs.mkShell {
+          buildInputs = [
+            pkgs.mypython
+            pkgs.jupyterlab
+          ];
+        };
       }
     );
 

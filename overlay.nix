@@ -1,58 +1,67 @@
-final: prev: with final; {
+final: prev: {
 
   # For jupyter
   mkIhaskellKernel = { name ? "Haedosa"
                      , packages ? p : []
-                     } : callPackage ./kernels/ihaskell {
+                     } : final.callPackage ./kernels/ihaskell {
                            inherit name packages;
                          };
 
   mkIpythonKernel = { name ? "Haedosa"
-                    , python3 ? python310
+                    , python3 ? final.python3
                     , packages ? p : []
-                    }: callPackage ./kernels/ipython {
+                    }: final.callPackage ./kernels/ipython {
                          inherit name packages python3;
                        };
 
   mkJupyterlab = { haskellKernelName ? "Haedosa"
                  , haskellPackages ? p: []
-                 , python3 ? final.python310
+                 , python3 ? final.python3
                  , pythonKernelName ? "Haedosa"
                  , pythonPackages ? p: [] }: let
-                   ihaskellKernel = mkIhaskellKernel
+                   ihaskellKernel = final.mkIhaskellKernel
                      {
                        name = haskellKernelName;
                        packages = haskellPackages;
                      };
-                   ipythonKernel = mkIpythonKernel
+                   ipythonKernel = final.mkIpythonKernel
                      {
                        inherit python3;
                        name = pythonKernelName;
                        packages = pythonPackages;
                      };
-    in python3Packages.jupyterlab.overridePythonAttrs (oldAttrs: {
+    in final.python3Packages.jupyterlab.overridePythonAttrs (oldAttrs: {
       makeWrapperArgs = oldAttrs.makeWrapperArgs ++ [
         "--set JUPYTER_PATH ${ihaskellKernel}:${ipythonKernel}"
       ];
     });
 
-  jupyterlab = mkJupyterlab {
+  mypython = final.python3.withPackages (p: [
+    p.numpy
+    p.scipy
+    p.pandas
+    p.requests
+    p.matplotlib
+  ]);
+
+  jupyterlab = final.mkJupyterlab {
       haskellKernelName = "Haedosa";
       haskellPackages = p: with p;
         [ hvega
-          ihaskell-hvega
+          # ihaskell-hvega
           # add haskell pacakges if necessary
         ];
       pythonKernelName = "Haedosa";
       pythonPackages = p: with p;
-        [ # add python pacakges if necessary
-          scipy
+        [ scipy
           numpy
           tensorflow-bin
           matplotlib
           scikit-learn
           pandas
           lightgbm
+          pytorch
+          # add more python pacakges if necessary
         ];
     };
 }
